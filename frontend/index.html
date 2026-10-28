@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+ content="width=device-width, initial-scale=1">
+<title>GNOMEbusiness</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">🌲 GNOME<span>business</span></div>
+    <div class="workspace">BUSINESS WORKSPACE</div>
+    <nav>
+      <a class="active" href="/">▦ Dashboard</a>
+      <a href="#leads">♙ Leads</a>
+      <a href="#pipeline">◈ Pipeline</a>
+      <a href="#appointments">▣ Appointments</a>
+      <a href="#outreach">✉ Outreach</a>
+    </nav>
+    <div class="sidebar-bottom">GNOMEbusiness v0.1</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">WORKSPACE OVERVIEW</div>
+        <h1>Dashboard <span class="wave">✦</span></h1>
+      </div>
+      <div class="profile">GB</div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">WELCOME TO THE FOREST</div>
+        <h2>Grow your business.<br>
+        <span>One lead at a time.</span></h2>
+        <p>Your command center for leads,
+        appointments and outreach.</p>
+        <a class="hero-btn" href="#leads">Explore leads →</a>
+      </div>
+      <div class="hero-art">🌲<span>🍄</span></div>
+    </section>
+
+    <section class="stats">
+      <article class="stat">
+        <div class="stat-label">TOTAL LEADS <b>↗</b></div>
+        <strong>128</strong>
+        <small>Demo data</small>
+      </article>
+      <article class="stat">
+        <div class="stat-label">APPOINTMENTS <b>▣</b></div>
+        <strong>12</strong>
+        <small>Demo data</small>
+      </article>
+      <article class="stat">
+        <div class="stat-label">REPLIES <b>✉</b></div>
+        <strong>24</strong>
+        <small>Demo data</small>
+      </article>
+      <article class="stat">
+        <div class="stat-label">FOLLOW-UPS <b>◷</b></div>
+        <strong>7</strong>
+        <small>Demo data</small>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel" id="pipeline">
+        <div class="panel-head">
+          <h3>Lead Pipeline</h3>
+          <span class="pill">Overview</span>
+        </div>
+        <div id="pipeline-bars"></div>
+      </article>
+
+      <article class="panel" id="appointments">
+        <div class="panel-head">
+          <h3>Upcoming Tasks</h3>
+          <span class="pill">Today</span>
+        </div>
+        <div class="task">
+          <span class="task-dot"></span>
+          Follow up with new prospects
+        </div>
+        <div class="task">
+          <span class="task-dot gold"></span>
+          Review appointment requests
+        </div>
+        <div class="task">
+          <span class="task-dot blue"></span>
+          Prepare outreach drafts
+        </div>
+      </article>
+    </section>
+
+    <section class="panel leads-panel" id="leads">
+      <div class="panel-head">
+        <h3>Recent Leads</h3>
+        <span class="pill">Demo records</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Contact</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="lead-rows"></tbody>
+        </table>
+      </div>
+    </section>
+    <section id="outreach"></section>
+  </main>
+</div>
+<script src="/static/js/workspace.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/live.js"></script>
+<script src="/static/js/lead-form.js"></script>
+<script src="/static/js/lead-manager.js"></script>
+<script src="/static/js/followups.js"></script>
+<script src="/static/js/tasks.js"></script>
+</body>
+</html>
