@@ -167,7 +167,7 @@ def test_read_permission_required():
 
 
 def test_issue_only_admin_cannot_revoke():
-    business_id, _ = setup()
+    business_id, token = setup()
 
     with connect() as db:
         db.execute(
@@ -177,29 +177,15 @@ def test_issue_only_admin_cannot_revoke():
             """
         )
 
-    from app.admin_security import digest
-
-    with connect() as db:
-        row = db.execute(
-            """
-            SELECT token_hash
-            FROM admin_credentials
-            """
-        ).fetchone()
-
-    assert row is not None
-
-    # Use a fresh isolated setup for a permission check
-    # through the existing administrator identity.
     with pytest.raises(HTTPException) as error:
         revoke_customer_credential(
-            "gnadmin_invalid",
+            token,
             business_id,
             "owner",
             1,
         )
 
-    assert error.value.status_code == 401
+    assert error.value.status_code == 403
 
 
 def test_unauthorized_inventory_denied():

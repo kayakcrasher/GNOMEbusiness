@@ -52,6 +52,12 @@ class TenantGuard(BaseHTTPMiddleware):
         if path in PUBLIC_PATHS:
             return await call_next(request)
 
+        # Agent routes authenticate bearer credentials
+        # through their own scoped gateway.
+        # Never grant agent tokens owner-level access.
+        if path.startswith("/api/agents/"):
+            return await call_next(request)
+
         # Workspace creation is not a public signup endpoint.
         if path == "/api/businesses":
             return JSONResponse(

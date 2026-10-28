@@ -70,24 +70,29 @@ def record_event(
 
 
 def issue_owner_key(business_id, operator):
+    import secrets
+
     operator = validate_operator(operator)
     migrate()
     require_customer_active(business_id)
 
-    key = create_key(business_id)
+    key = "gnb_" + secrets.token_urlsafe(32)
 
     with connect() as db:
-        row = db.execute(
+        cursor = db.execute(
             """
-            SELECT id FROM api_keys
-            WHERE key_hash = ?
+            INSERT INTO api_keys (business_id, key_hash)
+            SELECT id, ? FROM businesses WHERE id = ?
             """,
-            (hash_key(key),),
-        ).fetchone()
+            (hash_key(key), business_id),
+        )
+
+        if cursor.rowcount != 1:
+            raise ValueError("Business not found")
 
         record_event(
             db, business_id, "owner",
-            row["id"], "issued", operator,
+            cursor.lastrowid, "issued", operator,
         )
 
     return key
@@ -96,26 +101,53 @@ def issue_owner_key(business_id, operator):
 def issue_agent_token(
     business_id, name, scopes, operator
 ):
+    import secrets
+    from app.agent_gateway import digest
+
     operator = validate_operator(operator)
     requested = set(scopes)
 
     if not requested or not requested <= SCOPES:
         raise ValueError("Invalid agent scopes")
 
+    if not name or not name.strip():
+        raise ValueError("Agent name required")
+
     migrate()
     require_customer_active(business_id)
 
-    result = provision_agent(
-        business_id, name, requested
-    )
+    token = "gna_" + secrets.token_urlsafe(32)
 
     with connect() as db:
-        record_event(
-            db, business_id, "agent",
-            result["agent_id"], "issued", operator,
+        cursor = db.execute(
+            """
+            INSERT INTO agent_credentials
+            (business_id, name, token_hash, scopes)
+            SELECT id, ?, ?, ?
+            FROM businesses WHERE id = ?
+            """,
+            (
+                name.strip(),
+                digest(token),
+                ",".join(sorted(requested)),
+                business_id,
+            ),
         )
 
-    return result
+        if cursor.rowcount != 1:
+            raise ValueError("Business not found")
+
+        agent_id = cursor.lastrowid
+
+        record_event(
+            db, business_id, "agent",
+            agent_id, "issued", operator,
+        )
+
+    return {
+        "agent_id": agent_id,
+        "token": token,
+    }
 
 
 def revoke_credential(
