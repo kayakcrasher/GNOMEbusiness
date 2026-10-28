@@ -35,6 +35,7 @@ def migrate():
                 action TEXT NOT NULL,
                 title TEXT NOT NULL,
                 payload TEXT NOT NULL,
+                idempotency_key TEXT,
                 status TEXT NOT NULL DEFAULT 'pending',
                 reviewed_by TEXT,
                 reviewed_at TEXT,
@@ -44,6 +45,28 @@ def migrate():
                 FOREIGN KEY (agent_id)
                     REFERENCES agent_credentials(id)
             )
+        """)
+
+        columns = {
+            row["name"]
+            for row in db.execute(
+                "PRAGMA table_info(agent_proposals)"
+            )
+        }
+
+        if "idempotency_key" not in columns:
+            db.execute(
+                "ALTER TABLE agent_proposals "
+                "ADD COLUMN idempotency_key TEXT"
+            )
+
+        db.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            idx_proposal_idempotency
+            ON agent_proposals(
+                business_id, idempotency_key
+            )
+            WHERE idempotency_key IS NOT NULL
         """)
 
         db.execute("""
@@ -64,6 +87,11 @@ class ProposalCreate(BaseModel):
     action: str
     title: str = Field(min_length=1, max_length=200)
     payload: dict = Field(default_factory=dict)
+    idempotency_key: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=160,
+    )
 
 
 class Decision(BaseModel):
@@ -103,11 +131,49 @@ def submit_proposal(
     migrate()
 
     with connect() as db:
+        # IMMEDIATE serializes competing SQLite writers.
+        db.execute("BEGIN IMMEDIATE")
+
+        if data.idempotency_key is not None:
+            existing = db.execute(
+                """
+                SELECT id, agent_id, action, title,
+                       payload, status
+                FROM agent_proposals
+                WHERE business_id = ?
+                  AND idempotency_key = ?
+                """,
+                (
+                    agent["business_id"],
+                    data.idempotency_key,
+                ),
+            ).fetchone()
+
+            if existing is not None:
+                if (
+                    existing["agent_id"] != agent["agent_id"]
+                    or existing["action"] != data.action
+                    or existing["title"] != data.title
+                    or existing["payload"] != encoded
+                ):
+                    raise HTTPException(
+                        409,
+                        "Idempotency key conflict",
+                    )
+
+                return {
+                    "id": existing["id"],
+                    "status": existing["status"],
+                }
+
         cursor = db.execute(
             """
             INSERT INTO agent_proposals
-            (business_id, agent_id, action, title, payload)
-            VALUES (?, ?, ?, ?, ?)
+            (
+                business_id, agent_id, action,
+                title, payload, idempotency_key
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
             (
                 agent["business_id"],
@@ -115,6 +181,7 @@ def submit_proposal(
                 data.action,
                 data.title,
                 encoded,
+                data.idempotency_key,
             ),
         )
 
