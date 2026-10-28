@@ -75,7 +75,8 @@ def authenticate(key):
     if row is None:
         raise HTTPException(401, "Invalid API key")
 
-    return row["business_id"]
+    from app.workspace_access import require_active_workspace
+    return require_active_workspace(row["business_id"])
 
 
 @router.get("/secure/report")

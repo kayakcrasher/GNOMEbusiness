@@ -145,6 +145,9 @@ def authorize(token, scope):
 
         audit(db, agent, scope, "allowed")
 
+    from app.workspace_access import require_active_workspace
+    require_active_workspace(agent["business_id"])
+
     return {
         "agent_id": agent["id"],
         "business_id": agent["business_id"],
