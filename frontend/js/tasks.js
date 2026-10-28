@@ -1,67 +1,126 @@
 "use strict";
 
 (() => {
-  const params = new URLSearchParams(location.search);
-  const businessId = Number(params.get("business"));
-
   const panel = document.querySelector("#appointments");
-
   if (!panel) return;
 
-  const tasks = document.createElement("div");
-  tasks.id = "live-tasks";
+  const existing = panel.querySelector("#live-tasks");
+  if (existing) existing.remove();
 
   panel.querySelectorAll(".task").forEach(
-    element => element.hidden = true
+    item => item.hidden = true
   );
 
-  panel.append(tasks);
+  const container = document.createElement("div");
+  container.id = "live-tasks";
+  panel.append(container);
 
-  async function refresh() {
+  async function refreshTasks() {
+    const businessId = Number(
+      new URLSearchParams(location.search)
+        .get("business")
+    );
+
     if (!Number.isSafeInteger(businessId) || businessId < 1) {
-      tasks.textContent = "Select a business.";
+      container.textContent = "Select a business.";
       return;
     }
 
     try {
       const response = await fetch(
-        `/api/businesses/${businessId}/followups`
+        `/api/businesses/${businessId}/tasks`
       );
 
-      if (!response.ok) throw new Error("Tasks unavailable");
+      if (!response.ok) {
+        throw new Error("Unable to load tasks");
+      }
 
       const data = await response.json();
-      tasks.replaceChildren();
+      container.replaceChildren();
 
-      if (!data.followups.length) {
-        tasks.textContent = "No follow-ups scheduled.";
+      const summary = document.createElement("div");
+      summary.className = "task-summary";
+
+      for (const type of ["overdue", "today", "upcoming"]) {
+        const item = document.createElement("div");
+        item.className = `task-count ${type}`;
+
+        const number = document.createElement("strong");
+        number.textContent = data.summary[type];
+
+        const label = document.createElement("small");
+        label.textContent = type.toUpperCase();
+
+        item.append(number, label);
+        summary.append(item);
+      }
+
+      container.append(summary);
+
+      if (!data.tasks.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "All caught up. No active follow-ups.";
+        container.append(empty);
         return;
       }
 
-      for (const item of data.followups) {
+      for (const task of data.tasks) {
         const row = document.createElement("div");
-        row.className = "task";
+        row.className = `task live-task ${task.due}`;
+
+        const content = document.createElement("div");
 
         const title = document.createElement("strong");
-        title.textContent = item.company;
+        title.textContent = task.company;
 
         const detail = document.createElement("small");
         detail.textContent =
-          `${item.follow_up} · ${item.notes || "Follow up"}`;
+          `${task.follow_up} · ${task.notes || "Follow up"}`;
 
-        row.append(title, detail);
-        tasks.append(row);
+        content.append(title, detail);
+
+        const done = document.createElement("button");
+        done.type = "button";
+        done.className = "complete-task";
+        done.textContent = "Done";
+        done.setAttribute(
+          "aria-label",
+          `Complete follow-up for ${task.company}`
+        );
+
+        done.addEventListener("click", async () => {
+          done.disabled = true;
+
+          try {
+            const response = await fetch(
+              `/api/leads/${task.id}/complete-followup`,
+              {method: "PATCH"}
+            );
+
+            if (!response.ok) {
+              throw new Error("Completion failed");
+            }
+
+            await refreshTasks();
+          } catch (error) {
+            done.disabled = false;
+            done.textContent = "Retry";
+            console.error(error);
+          }
+        });
+
+        row.append(content, done);
+        container.append(row);
       }
-
     } catch (error) {
-      tasks.textContent = error.message;
+      container.textContent = error.message;
     }
   }
 
   window.addEventListener(
     "gnome:followups-changed",
-    refresh
+    refreshTasks
   );
 
-  refresh();
+  refreshTasks();
 })();

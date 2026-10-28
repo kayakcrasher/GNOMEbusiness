@@ -839,3 +839,350 @@ tbody tr:hover {
   color: var(--muted);
   line-height: 1.5;
 }
+
+/* SMASH 013 — TASK COMMAND CENTER */
+
+.task-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+
+.task-count {
+  padding: 14px 8px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  text-align: center;
+}
+
+.task-count strong {
+  display: block;
+  font-size: 23px;
+}
+
+.task-count small {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.task-count.overdue strong {
+  color: #ff7777;
+}
+
+.task-count.today strong {
+  color: #ffd67b;
+}
+
+.task-count.upcoming strong {
+  color: #5bf5ae;
+}
+
+.live-task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  border-left: 3px solid #5bf5ae;
+}
+
+.live-task.overdue {
+  border-left-color: #ff7777;
+}
+
+.live-task.today {
+  border-left-color: #ffd67b;
+}
+
+.live-task > div {
+  min-width: 0;
+}
+
+.live-task small {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.complete-task {
+  flex-shrink: 0;
+  padding: 9px 12px;
+  border: 1px solid #4c9d70;
+  border-radius: 9px;
+  background: #214934;
+  color: #b4ffd7;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.complete-task:disabled {
+  opacity: .5;
+}
+
+/* SMASH 013 — TASK COMMAND CENTER */
+
+.task-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+
+.task-count {
+  padding: 14px 8px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  text-align: center;
+}
+
+.task-count strong {
+  display: block;
+  font-size: 23px;
+}
+
+.task-count small {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.task-count.overdue strong {
+  color: #ff7777;
+}
+
+.task-count.today strong {
+  color: #ffd67b;
+}
+
+.task-count.upcoming strong {
+  color: #5bf5ae;
+}
+
+.live-task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  border-left: 3px solid #5bf5ae;
+}
+
+.live-task.overdue {
+  border-left-color: #ff7777;
+}
+
+.live-task.today {
+  border-left-color: #ffd67b;
+}
+
+.live-task > div {
+  min-width: 0;
+}
+
+.live-task small {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.complete-task {
+  flex-shrink: 0;
+  padding: 9px 12px;
+  border: 1px solid #4c9d70;
+  border-radius: 9px;
+  background: #214934;
+  color: #b4ffd7;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.complete-task:disabled {
+  opacity: .5;
+}
+
+/* SMASH 014 — NAVIGATION */
+
+.nav-active {
+  color: #d9b76d !important;
+  background: rgba(217,183,109,.12);
+  border-color: rgba(217,183,109,.3);
+}
+
+#leads,
+#appointments,
+#outreach,
+#settings {
+  scroll-margin-top: 90px;
+}
+
+/* GNOMEbusiness real view navigation */
+
+.main > [hidden] {
+  display: none !important;
+}
+
+.module-panel {
+  min-height: 240px;
+  margin-top: 20px;
+}
+
+.module-panel p {
+  color: #a7bdb1;
+  line-height: 1.7;
+}
+
+.sidebar nav a.active {
+  color: #f0c879;
+  background: rgba(240, 200, 121, .12);
+  border-radius: 10px;
+}
+
+/* SMASH 015 — GNOMEbook */
+
+.booking-section {
+  margin-top: 26px;
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(24, 61, 44, .85),
+    rgba(8, 24, 19, .94)
+  );
+  border: 1px solid rgba(217, 183, 109, .25);
+}
+
+#booking-form {
+  display: grid;
+  gap: 15px;
+  margin: 20px 0 28px;
+}
+
+#booking-form label {
+  display: grid;
+  gap: 8px;
+  color: #e6dfca;
+}
+
+#booking-form input,
+#booking-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid #45634f;
+  background: #0b1d16;
+  color: white;
+  font: inherit;
+}
+
+#booking-form button,
+.booking-card button {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #c9a75e;
+  background: #b8954c;
+  color: #102019;
+  font-weight: 800;
+}
+
+.booking-card {
+  padding: 16px;
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.booking-card strong,
+.booking-card small {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.booking-card small {
+  color: #b3c7ba;
+}
+
+.booking-card button {
+  margin: 4px 8px 4px 0;
+}
+
+#booking-message {
+  color: #7dffc0;
+}
+
+/* SMASH 016 — GNOMEreach */
+
+.reach-panel {
+  padding: 22px;
+}
+
+#reach-form {
+  display: grid;
+  gap: 16px;
+  margin: 22px 0 32px;
+}
+
+#reach-form label {
+  display: grid;
+  gap: 8px;
+  color: #e6dfca;
+}
+
+#reach-form input,
+#reach-form select,
+#reach-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #45634f;
+  border-radius: 10px;
+  background: #0b1d16;
+  color: white;
+  font: inherit;
+}
+
+#reach-form button,
+.reach-message-card button {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #c9a75e;
+  background: #b8954c;
+  color: #102019;
+  font-weight: 800;
+}
+
+.reach-message-card {
+  margin-top: 14px;
+  padding: 17px;
+  border: 1px solid rgba(217,183,109,.2);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.reach-message-card strong,
+.reach-message-card small {
+  display: block;
+  margin-bottom: 9px;
+}
+
+.reach-message-card small {
+  color: #8fdcb2;
+}
+
+.reach-message-card p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#reach-message {
+  color: #7dffc0;
+}

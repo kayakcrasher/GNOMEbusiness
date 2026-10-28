@@ -50,3 +50,13 @@ app.include_router(dashboard_router)
 from app.followups import router as followups_router
 
 app.include_router(followups_router)
+
+from app.tasks import router as tasks_router
+
+app.include_router(tasks_router)
+
+from app.appointments.api import router as appointments_router
+app.include_router(appointments_router)
+
+from app.outreach.api import router as outreach_router
+app.include_router(outreach_router)
