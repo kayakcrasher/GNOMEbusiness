@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from app.production_guard import validate_production_config
+
+validate_production_config()
 
 app = FastAPI(
     title="GNOMEbusiness",

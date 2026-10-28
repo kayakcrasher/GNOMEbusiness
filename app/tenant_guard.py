@@ -58,6 +58,25 @@ class TenantGuard(BaseHTTPMiddleware):
         if path.startswith("/api/agents/"):
             return await call_next(request)
 
+        # Login is public; the handler validates credentials.
+        if path == "/api/auth/login" and request.method == "POST":
+            return await call_next(request)
+
+        # Workstation endpoints validate scoped agent tokens.
+        if path.startswith("/api/workstation/"):
+            return await call_next(request)
+
+        if path == "/api/workstation/jobs":
+            return await call_next(request)
+
+        # Only proposal submission uses agent credentials.
+        # Approval review and decisions remain owner-only.
+        if (
+            path == "/api/approvals/proposals"
+            and request.method == "POST"
+        ):
+            return await call_next(request)
+
         # Workspace creation is not a public signup endpoint.
         if path == "/api/businesses":
             return JSONResponse(
