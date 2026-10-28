@@ -208,6 +208,47 @@ def claim_job(
     }
 
 
+@router.post("/jobs/{job_id}/recover")
+def recover_job(
+    job_id: int,
+    authorization: str | None = Header(default=None),
+):
+    agent = identity(authorization)
+    migrate()
+
+    with connect() as db:
+        cursor = db.execute(
+            """
+            UPDATE agent_jobs
+            SET claimed_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+              AND business_id = ?
+              AND claimed_by = ?
+              AND status = 'working'
+              AND claimed_at <= datetime(
+                  'now', '-15 minutes'
+              )
+            """,
+            (
+                job_id,
+                agent["business_id"],
+                agent["agent_id"],
+            ),
+        )
+
+        if cursor.rowcount != 1:
+            raise HTTPException(
+                409,
+                "Job not eligible for recovery",
+            )
+
+    return {
+        "id": job_id,
+        "status": "working",
+        "recovered": True,
+    }
+
+
 @router.post("/jobs/{job_id}/complete")
 def complete_job(
     job_id: int,
