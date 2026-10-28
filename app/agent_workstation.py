@@ -113,6 +113,7 @@ def create_job(
     # or draft-producing. No external side effects.
     allowed = {
         "lead:analyze",
+        "lead:process",
         "outreach:draft",
         "appointment:research",
     }
