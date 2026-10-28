@@ -1,0 +1,9 @@
+
+# Local runtime and secrets
+__pycache__/
+*.pyc
+data/
+.env
+.env.*
+*.db
+*.sqlite3

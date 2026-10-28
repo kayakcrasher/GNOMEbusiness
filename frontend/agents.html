@@ -249,11 +249,46 @@ button.secondary { background: #304a39; color: white; }
           )
         );
 
-        const detail = document.createElement("pre");
-        detail.textContent = JSON.stringify(
-          proposal.payload, null, 2
-        );
-        card.append(detail);
+        const payload = proposal.payload || {};
+
+        if (proposal.action === "outreach:draft") {
+          const customer = text(
+            "p",
+            "Customer: " +
+            (payload.customer_name || "Unknown")
+          );
+
+          const inquiry = document.createElement("pre");
+          inquiry.textContent =
+            "INQUIRY\n" + (payload.inquiry || "");
+
+          const analysis = document.createElement("pre");
+          const info = payload.analysis || {};
+          analysis.textContent =
+            "ANALYSIS\n" +
+            "Intent: " + (info.intent || "Unknown") +
+            "\nPriority: " + (info.priority || "Unknown");
+
+          const draft = document.createElement("pre");
+          draft.textContent =
+            "SUGGESTED RESPONSE\n" +
+            (payload.draft || "No draft available");
+
+          const review = text(
+            "p",
+            "Human review required · No automatic sending"
+          );
+
+          card.append(
+            customer, inquiry, analysis, draft, review
+          );
+        } else {
+          const detail = document.createElement("pre");
+          detail.textContent = JSON.stringify(
+            payload, null, 2
+          );
+          card.append(detail);
+        }
 
         if (proposal.status === "pending") {
           const actions = document.createElement("div");
