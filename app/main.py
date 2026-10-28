@@ -63,3 +63,34 @@ app.include_router(outreach_router)
 
 from app.appointments.conversion import router as conversion_router
 app.include_router(conversion_router)
+
+from app.reporting import router as reporting_router
+app.include_router(reporting_router)
+
+from app.security import router as security_router
+app.include_router(security_router)
+
+from app.tenant_guard import TenantGuard
+app.add_middleware(TenantGuard)
+
+from app.auth import router as auth_router
+app.include_router(auth_router)
+
+
+@app.get("/login", include_in_schema=False)
+def login_page():
+    return FileResponse(FRONTEND / "login.html")
+
+from app.agent_gateway import router as agent_router
+app.include_router(agent_router)
+
+from app.approvals import router as approvals_router
+app.include_router(approvals_router)
+
+
+@app.get("/agents", include_in_schema=False)
+def agent_control_center():
+    return FileResponse(FRONTEND / "agents.html")
+
+from app.agent_workstation import router as workstation_router
+app.include_router(workstation_router)

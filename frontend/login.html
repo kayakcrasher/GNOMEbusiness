@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071810">
+  <title>GNOMEbusiness | Forest Gateway</title>
+  <link rel="stylesheet" href="/static/css/login.css">
+  <script src="/static/js/login.js" defer></script>
+</head>
+<body>
+  <div class="forest-glow"></div>
+  <div class="forest-grid"></div>
+
+  <main class="gateway">
+    <section class="identity">
+      <div class="brand">
+        <span class="brand-icon">🌲</span>
+        GNOME<span>business</span>
+      </div>
+
+      <div class="system-label">
+        <span class="pulse"></span>
+        FOREST NETWORK · ACCESS GATEWAY
+      </div>
+
+      <h1>
+        GROW BEYOND
+        <span>THE ORDINARY.</span>
+      </h1>
+
+      <p>
+        Your command center for leads,
+        outreach, appointments and business growth.
+      </p>
+
+      <div class="network">
+        <div><span>01</span> GNOMEleads <b>CRM</b></div>
+        <div><span>02</span> GNOMEreach <b>OUTREACH</b></div>
+        <div><span>03</span> GNOMEbook <b>BOOKING</b></div>
+      </div>
+    </section>
+
+    <section class="login-card">
+      <div class="card-top">
+        <div class="lock">✧</div>
+        <span>SECURE ACCESS</span>
+      </div>
+
+      <h2>Enter the forest.</h2>
+      <p class="subtitle">
+        Sign in to your business workspace.
+      </p>
+
+      <form id="login-form">
+        <label for="username">USERNAME</label>
+        <input
+          id="username"
+          name="username"
+          autocomplete="username"
+          maxlength="200"
+          required
+          placeholder="Your username"
+        >
+
+        <label for="password">PASSWORD</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder="Your password"
+        >
+
+        <button type="submit" id="login-button">
+          ENTER COMMAND CENTER
+          <span>↗</span>
+        </button>
+
+        <p id="login-feedback" role="status"
+           aria-live="polite"></p>
+      </form>
+
+      <div class="card-footer">
+        <span class="pulse"></span>
+        GNOME NETWORK
+        <span>AUTHORIZED ACCESS ONLY</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    GNOMEbusiness · FUTURE FOREST SYSTEMS
+  </footer>
+</body>
+</html>

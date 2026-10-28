@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+<title>Agent Control Center | GNOMEbusiness</title>
+<style>
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #081611;
+  color: #eaf3e8;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+header {
+  padding: 22px 20px;
+  border-bottom: 1px solid #294839;
+  background: #10251b;
+}
+.brand { color: #a5d9ae; font-weight: 800; }
+h1 { font-size: 27px; margin: 12px 0 6px; }
+h2 { font-size: 18px; }
+p, small { color: #b3c8b8; }
+main { max-width: 980px; margin: auto; padding: 20px; }
+.panel, .proposal, .metric {
+  background: #13271d;
+  border: 1px solid #31503c;
+  border-radius: 17px;
+  padding: 18px;
+}
+.panel { margin-bottom: 18px; }
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+input {
+  flex: 1;
+  min-width: 200px;
+  padding: 13px;
+  background: #081611;
+  border: 1px solid #476b52;
+  border-radius: 10px;
+  color: white;
+}
+button, .back {
+  padding: 12px 17px;
+  border: 0;
+  border-radius: 10px;
+  background: #a5d9ae;
+  color: #10251b;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:disabled { opacity: .5; cursor: wait; }
+button.reject { background: #e5a9a2; }
+button.secondary { background: #304a39; color: white; }
+.back { display: inline-block; text-decoration: none; }
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.metric { text-align: center; }
+.metric strong { display: block; font-size: 28px; }
+.metric span { color: #b3c8b8; font-size: 12px; }
+.proposal { margin-bottom: 14px; }
+.proposal h3 { margin: 10px 0; }
+.proposal pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #081611;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.proposal .actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.status {
+  color: #b5dfa8;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+#error { color: #f2b1a9; }
+@media (max-width: 600px) {
+  .metrics { gap: 6px; }
+  .metric { padding: 12px 5px; }
+  .metric strong { font-size: 23px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">🌲 GNOMEbusiness / AGENT OPERATIONS</div>
+  <h1>Agent Control Center</h1>
+  <p>Review proposals. Authorize decisions. Keep control.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Development access</h2>
+    <p>Enter your business API key to load its proposals.
+       The key stays in this page's memory and is cleared
+       when the page closes or reloads.</p>
+    <div class="controls">
+      <input id="key" type="password"
+             placeholder="Business API key"
+             autocomplete="off">
+      <button id="connect">Connect</button>
+      <button id="disconnect" class="secondary">
+        Disconnect
+      </button>
+    </div>
+    <p id="error" role="alert"></p>
+  </section>
+
+  <section class="metrics" aria-label="Proposal counts">
+    <div class="metric">
+      <strong id="pending">0</strong>
+      <span>Pending</span>
+    </div>
+    <div class="metric">
+      <strong id="approved">0</strong>
+      <span>Approved</span>
+    </div>
+    <div class="metric">
+      <strong id="rejected">0</strong>
+      <span>Rejected</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="controls">
+      <h2 style="flex:1">Agent proposals</h2>
+      <button id="refresh" class="secondary">
+        Refresh
+      </button>
+    </div>
+    <div id="proposals" aria-live="polite">
+      <p>Connect to load proposals.</p>
+    </div>
+  </section>
+
+  <a href="/" class="back">Back to dashboard</a>
+</main>
+
+<script>
+(() => {
+  let apiKey = "";
+  let generation = 0;
+
+  const $ = id => document.getElementById(id);
+  const list = $("proposals");
+
+  function message(value) {
+    $("error").textContent = value;
+  }
+
+  function reset() {
+    generation++;
+    apiKey = "";
+    $("key").value = "";
+    $("pending").textContent = "0";
+    $("approved").textContent = "0";
+    $("rejected").textContent = "0";
+    list.replaceChildren();
+    const p = document.createElement("p");
+    p.textContent = "Connect to load proposals.";
+    list.append(p);
+  }
+
+  function text(tag, value, className = "") {
+    const element = document.createElement(tag);
+    element.textContent = String(value ?? "");
+    if (className) element.className = className;
+    return element;
+  }
+
+  async function request(path, options = {}) {
+    const response = await fetch(path, {
+      ...options,
+      cache: "no-store",
+      credentials: "omit",
+      headers: {
+        "X-API-Key": apiKey,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        "Request failed: HTTP " + response.status
+      );
+    }
+
+    return response.json();
+  }
+
+  async function load() {
+    if (!apiKey) {
+      message("Connect with a business API key first.");
+      return;
+    }
+
+    const current = generation;
+    message("");
+
+    try {
+      const data = await request("/api/approvals");
+
+      if (current !== generation) return;
+
+      const proposals = data.proposals || [];
+
+      for (const status of [
+        "pending", "approved", "rejected"
+      ]) {
+        $(status).textContent = proposals.filter(
+          p => p.status === status
+        ).length;
+      }
+
+      list.replaceChildren();
+
+      if (!proposals.length) {
+        list.append(text("p", "No proposals found."));
+        return;
+      }
+
+      for (const proposal of proposals) {
+        const card = document.createElement("article");
+        card.className = "proposal";
+
+        card.append(
+          text("span", proposal.status, "status"),
+          text("h3", proposal.title),
+          text(
+            "small",
+            (proposal.agent_name || "Agent") +
+            " · " + proposal.action
+          )
+        );
+
+        const detail = document.createElement("pre");
+        detail.textContent = JSON.stringify(
+          proposal.payload, null, 2
+        );
+        card.append(detail);
+
+        if (proposal.status === "pending") {
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          for (const decision of [
+            "approved", "rejected"
+          ]) {
+            const button = document.createElement("button");
+            button.textContent =
+              decision === "approved" ? "Approve" : "Reject";
+
+            if (decision === "rejected") {
+              button.className = "reject";
+            }
+
+            button.addEventListener("click", async () => {
+              const verb = decision === "approved"
+                ? "approve" : "reject";
+
+              if (!confirm(
+                `Do you want to ${verb} proposal #${proposal.id}?`
+              )) return;
+
+              button.disabled = true;
+              message("");
+
+              try {
+                await request(
+                  `/api/approvals/${proposal.id}/decision`,
+                  {
+                    method: "POST",
+                    body: JSON.stringify({ decision })
+                  }
+                );
+                await load();
+              } catch (error) {
+                message(error.message);
+                button.disabled = false;
+              }
+            });
+
+            actions.append(button);
+          }
+
+          card.append(actions);
+        }
+
+        list.append(card);
+      }
+    } catch (error) {
+      if (current !== generation) return;
+      message(error.message);
+      list.replaceChildren();
+    }
+  }
+
+  $("connect").addEventListener("click", () => {
+    generation++;
+    apiKey = $("key").value.trim();
+    $("key").value = "";
+    load();
+  });
+
+  $("disconnect").addEventListener("click", () => {
+    reset();
+    message("Disconnected.");
+  });
+
+  $("refresh").addEventListener("click", load);
+})();
+</script>
+</body>
+</html>
