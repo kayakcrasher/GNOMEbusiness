@@ -60,3 +60,6 @@ app.include_router(appointments_router)
 
 from app.outreach.api import router as outreach_router
 app.include_router(outreach_router)
+
+from app.appointments.conversion import router as conversion_router
+app.include_router(conversion_router)

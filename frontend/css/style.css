@@ -1186,3 +1186,57 @@ tbody tr:hover {
 #reach-message {
   color: #7dffc0;
 }
+
+/* SMASH 017 — Prospect Conversion */
+
+.conversion-section {
+  margin-top: 24px;
+  padding: 22px;
+  border-radius: 16px;
+  background: linear-gradient(
+    145deg,
+    rgba(23, 65, 46, .9),
+    rgba(10, 29, 23, .96)
+  );
+  border: 1px solid rgba(217, 183, 109, .35);
+}
+
+.conversion-section h3 {
+  color: #f0c879;
+}
+
+#conversion-form {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+#conversion-form label {
+  display: grid;
+  gap: 8px;
+}
+
+#conversion-form input,
+#conversion-form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #45634f;
+  border-radius: 10px;
+  background: #0b1d16;
+  color: white;
+  font: inherit;
+}
+
+#conversion-form button {
+  padding: 14px;
+  border: 1px solid #e4c77c;
+  border-radius: 10px;
+  background: #c5a25a;
+  color: #102019;
+  font-weight: 800;
+}
+
+#conversion-message {
+  color: #7dffc0;
+}
