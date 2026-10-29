@@ -95,6 +95,49 @@ button.secondary { background: #304a39; color: white; }
   .metric strong { font-size: 23px; }
 }
 </style>
+
+<style>
+.scope-options {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+.scope-options label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #dcebdc;
+}
+.scope-options input {
+  flex: none;
+  min-width: auto;
+  accent-color: #d4b66a;
+}
+#agent-secret {
+  background: #081611;
+  border: 1px solid #d4b66a;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 16px 0;
+}
+#agent-token {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+.agent-entry {
+  padding: 13px;
+  border-bottom: 1px solid #31503c;
+}
+.agent-entry .controls {
+  align-items: center;
+  justify-content: space-between;
+}
+#agent-message {
+  min-height: 20px;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -146,6 +189,54 @@ button.secondary { background: #304a39; color: white; }
     <div id="proposals" aria-live="polite">
       <p>Connect to load proposals.</p>
     </div>
+  </section>
+
+
+  <section class="panel" id="agent-connections">
+    <h2>🌲 Connect an Agent</h2>
+    <p>Give an agent limited access to your workspace.
+       Your account must be signed in.</p>
+
+    <div class="controls">
+      <input id="agent-name"
+             placeholder="Agent name, e.g. Leadkeeper"
+             maxlength="80">
+    </div>
+
+    <p>Choose permissions:</p>
+    <div class="scope-options">
+      <label><input type="checkbox"
+        value="leads:read" checked>
+        Read leads</label>
+      <label><input type="checkbox"
+        value="appointments:read">
+        Read appointments</label>
+      <label><input type="checkbox"
+        value="jobs:work">
+        Work on assigned jobs</label>
+    </div>
+
+    <div class="controls">
+      <button id="create-agent">Create Connection</button>
+      <button id="reload-agents" class="secondary">
+        Refresh Connections
+      </button>
+    </div>
+
+    <p id="agent-message" role="status"></p>
+
+    <div id="agent-secret" hidden>
+      <h3>One-time credential</h3>
+      <p>Copy this now. It cannot be retrieved later.</p>
+      <pre id="agent-token"></pre>
+      <button id="copy-agent-token">Copy Token</button>
+      <button id="hide-agent-token" class="secondary">
+        Hide Token
+      </button>
+    </div>
+
+    <h3>Active Connections</h3>
+    <div id="agent-list"></div>
   </section>
 
   <a href="/" class="back">Back to dashboard</a>
@@ -361,5 +452,6 @@ button.secondary { background: #304a39; color: white; }
   $("refresh").addEventListener("click", load);
 })();
 </script>
+<script src="/static/js/agent-connections.js"></script>
 </body>
 </html>
