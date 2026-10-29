@@ -41,7 +41,18 @@ def record_owner(kind, record_id):
 
 class TenantGuard(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
-        if os.getenv("GNOME_ENFORCE_AUTH") != "1":
+        environment = os.getenv(
+            "GNOME_ENV", "production"
+        ).strip().lower()
+
+        auth_setting = os.getenv(
+            "GNOME_ENFORCE_AUTH", "1"
+        )
+
+        if (
+            environment in {"development", "test"}
+            and auth_setting == "0"
+        ):
             return await call_next(request)
 
         path = request.url.path

@@ -12,12 +12,11 @@ def test_development_allows_auth_disabled(monkeypatch):
     assert validate_production_config()
 
 
-def test_production_requires_auth(monkeypatch):
+def test_production_defaults_to_auth_enabled(monkeypatch):
     monkeypatch.setenv("GNOME_ENV", "production")
     monkeypatch.delenv("GNOME_ENFORCE_AUTH", raising=False)
 
-    with pytest.raises(RuntimeError):
-        validate_production_config()
+    assert validate_production_config()
 
 
 def test_production_rejects_disabled_auth(monkeypatch):
