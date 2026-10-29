@@ -45,11 +45,23 @@
         const card = document.createElement("div");
         card.className = "agent-entry";
 
+        const state = {
+          online: "🟢 Online",
+          offline: "🔴 Offline",
+          never_connected: "⚪ Never connected"
+        }[agent.connection_status] || "Unknown";
+
         card.append(
           item("strong", agent.name),
+          item("small", state),
           item(
             "p",
             "Permissions: " + agent.scopes.join(", ")
+          ),
+          item(
+            "small",
+            "Last seen: " +
+            (agent.last_seen || "Never")
           )
         );
 

@@ -111,3 +111,6 @@ app.include_router(customer_jobs_router)
 
 from app.agent_operations import router as agent_operations_router
 app.include_router(agent_operations_router)
+
+from app.agent_heartbeat import router as agent_heartbeat_router
+app.include_router(agent_heartbeat_router)

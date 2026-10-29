@@ -1,14 +1,35 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, Cookie, Query
 
 from app.auth import session_user
 from app.database import connect
 from app.agent_workstation import migrate
+from app.agent_heartbeat import migrate as heartbeat_migrate
 
 router = APIRouter(
     prefix="/api/customer/operations",
     tags=["Agent Operations"],
 )
 
+
+
+
+def connection_status(last_seen):
+    if not last_seen:
+        return "never_connected"
+
+    try:
+        seen = datetime.fromisoformat(last_seen)
+        if seen.tzinfo is None:
+            return "offline"
+
+        age = (
+            datetime.now(timezone.utc) - seen
+        ).total_seconds()
+
+        return "online" if 0 <= age <= 90 else "offline"
+    except ValueError:
+        return "offline"
 
 @router.get("")
 def operations(
@@ -20,14 +41,18 @@ def operations(
     )["business_id"]
 
     migrate()
+    heartbeat_migrate()
 
     with connect() as db:
         agents = db.execute(
             """
-            SELECT id, name, scopes, created_at
-            FROM agent_credentials
-            WHERE business_id = ?
-              AND revoked_at IS NULL
+            SELECT a.id, a.name, a.scopes, a.created_at,
+                   h.last_seen
+            FROM agent_credentials a
+            LEFT JOIN agent_heartbeats h
+              ON h.agent_id = a.id
+            WHERE a.business_id = ?
+              AND a.revoked_at IS NULL
             ORDER BY id
             """,
             (business_id,),
@@ -78,6 +103,9 @@ def operations(
             {
                 **dict(agent),
                 "scopes": agent["scopes"].split(","),
+                "connection_status": connection_status(
+                    agent["last_seen"]
+                ),
             }
             for agent in agents
         ],
