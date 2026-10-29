@@ -97,3 +97,7 @@ def agent_control_center():
 
 from app.agent_workstation import router as workstation_router
 app.include_router(workstation_router)
+
+
+from app.muse_connector import router as muse_connector_router
+app.include_router(muse_connector_router)
