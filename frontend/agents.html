@@ -138,6 +138,36 @@ button.secondary { background: #304a39; color: white; }
 }
 </style>
 
+
+<style>
+#task-launcher select,
+#task-launcher textarea {
+  display: block;
+  width: 100%;
+  margin: 9px 0 16px;
+  padding: 12px;
+  border: 1px solid #476b52;
+  border-radius: 10px;
+  background: #081611;
+  color: #eaf3e8;
+  font: inherit;
+}
+#task-launcher label {
+  color: #b3c8b8;
+}
+.job-entry {
+  padding: 13px 0;
+  border-bottom: 1px solid #31503c;
+}
+.job-entry strong {
+  display: block;
+  margin-bottom: 5px;
+}
+.job-entry small {
+  display: block;
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -237,6 +267,42 @@ button.secondary { background: #304a39; color: white; }
 
     <h3>Active Connections</h3>
     <div id="agent-list"></div>
+  </section>
+
+
+  <section class="panel" id="task-launcher">
+    <h2>⚙️ Assign Agent Work</h2>
+    <p>Queue a task for a connected agent.</p>
+
+    <label for="job-agent">Assigned agent</label>
+    <select id="job-agent"></select>
+
+    <label for="job-kind">Task type</label>
+    <select id="job-kind">
+      <option value="lead:analyze">Analyze a lead</option>
+      <option value="lead:process">Process a lead</option>
+      <option value="outreach:draft">Draft outreach</option>
+      <option value="appointment:research">
+        Research an appointment
+      </option>
+    </select>
+
+    <label for="job-instructions">Instructions</label>
+    <textarea id="job-instructions"
+      maxlength="2000" rows="4"
+      placeholder="Describe the task for your agent..."></textarea>
+
+    <div class="controls">
+      <button id="launch-job">Queue Task</button>
+      <button id="refresh-jobs" class="secondary">
+        Refresh Jobs
+      </button>
+    </div>
+
+    <p id="job-message" role="status"></p>
+
+    <h3>Recent Jobs</h3>
+    <div id="job-list"></div>
   </section>
 
   <a href="/" class="back">Back to dashboard</a>
@@ -453,5 +519,6 @@ button.secondary { background: #304a39; color: white; }
 })();
 </script>
 <script src="/static/js/agent-connections.js"></script>
+<script src="/static/js/customer-jobs.js"></script>
 </body>
 </html>

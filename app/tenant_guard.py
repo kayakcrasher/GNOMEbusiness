@@ -77,6 +77,14 @@ class TenantGuard(BaseHTTPMiddleware):
         ):
             return await call_next(request)
 
+        # Customer job routes validate owner sessions
+        # and enforce tenant ownership in their handlers.
+        if (
+            path == "/api/customer/jobs"
+            or path.startswith("/api/customer/jobs/")
+        ):
+            return await call_next(request)
+
         # Login is public; the handler validates credentials.
         if path == "/api/auth/login" and request.method == "POST":
             return await call_next(request)

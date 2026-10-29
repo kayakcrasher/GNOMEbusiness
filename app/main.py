@@ -105,3 +105,6 @@ app.include_router(muse_connector_router)
 
 from app.connector_management import router as connector_management_router
 app.include_router(connector_management_router)
+
+from app.customer_jobs import router as customer_jobs_router
+app.include_router(customer_jobs_router)
