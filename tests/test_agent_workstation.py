@@ -76,8 +76,7 @@ def test_claim_job(tmp_path, monkeypatch):
         headers=auth(b),
     )
 
-    assert response.status_code == 200
-    assert response.json()["claimed_by"] == b["agent_id"]
+    assert response.status_code == 409
 
 
 def test_double_claim_blocked(tmp_path, monkeypatch):
@@ -142,3 +141,25 @@ def test_only_owner_completes(tmp_path, monkeypatch):
 
     assert denied.status_code == 409
     assert allowed.status_code == 200
+
+
+
+def test_worker_only_sees_assigned_jobs(
+    tmp_path, monkeypatch
+):
+    a, b, _ = setup(tmp_path, monkeypatch)
+
+    created = create(a)
+    assert created.status_code == 201
+
+    own = client.get(
+        "/api/workstation/jobs",
+        headers=auth(a),
+    )
+    other = client.get(
+        "/api/workstation/jobs",
+        headers=auth(b),
+    )
+
+    assert len(own.json()["jobs"]) == 1
+    assert other.json()["jobs"] == []

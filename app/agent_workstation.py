@@ -159,10 +159,14 @@ def list_jobs(
             SELECT *
             FROM agent_jobs
             WHERE business_id = ?
+              AND created_by = ?
             ORDER BY id DESC
             LIMIT 100
             """,
-            (agent["business_id"],),
+            (
+                agent["business_id"],
+                agent["agent_id"],
+            ),
         ).fetchall()
 
     return {
@@ -187,12 +191,14 @@ def claim_job(
                 claimed_at = CURRENT_TIMESTAMP
             WHERE id = ?
               AND business_id = ?
+              AND created_by = ?
               AND status = 'queued'
             """,
             (
                 agent["agent_id"],
                 job_id,
                 agent["business_id"],
+                agent["agent_id"],
             ),
         )
 
