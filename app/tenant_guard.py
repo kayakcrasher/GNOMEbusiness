@@ -58,6 +58,14 @@ class TenantGuard(BaseHTTPMiddleware):
         if path.startswith("/api/agents/"):
             return await call_next(request)
 
+        # Connector management uses authenticated owner sessions.
+        # Its handlers validate the session and tenant ownership.
+        if (
+            path == "/api/connectors/manage"
+            or path.startswith("/api/connectors/manage/")
+        ):
+            return await call_next(request)
+
         # Login is public; the handler validates credentials.
         if path == "/api/auth/login" and request.method == "POST":
             return await call_next(request)

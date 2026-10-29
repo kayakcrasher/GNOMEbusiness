@@ -101,3 +101,7 @@ app.include_router(workstation_router)
 
 from app.muse_connector import router as muse_connector_router
 app.include_router(muse_connector_router)
+
+
+from app.connector_management import router as connector_management_router
+app.include_router(connector_management_router)
