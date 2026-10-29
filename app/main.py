@@ -108,3 +108,6 @@ app.include_router(connector_management_router)
 
 from app.customer_jobs import router as customer_jobs_router
 app.include_router(customer_jobs_router)
+
+from app.agent_operations import router as agent_operations_router
+app.include_router(agent_operations_router)

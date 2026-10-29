@@ -85,6 +85,10 @@ class TenantGuard(BaseHTTPMiddleware):
         ):
             return await call_next(request)
 
+        # Read-only operations use authenticated owner sessions.
+        if path == "/api/customer/operations":
+            return await call_next(request)
+
         # Login is public; the handler validates credentials.
         if path == "/api/auth/login" and request.method == "POST":
             return await call_next(request)

@@ -305,6 +305,39 @@ button.secondary { background: #304a39; color: white; }
     <div id="job-list"></div>
   </section>
 
+
+  <section class="panel" id="operations-monitor">
+    <div class="controls">
+      <h2 style="flex:1">📊 Agent Operations</h2>
+      <button id="refresh-operations" class="secondary">
+        Refresh
+      </button>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <strong id="jobs-queued">0</strong>
+        <span>Queued</span>
+      </div>
+      <div class="metric">
+        <strong id="jobs-working">0</strong>
+        <span>Working</span>
+      </div>
+      <div class="metric">
+        <strong id="jobs-completed">0</strong>
+        <span>Completed</span>
+      </div>
+    </div>
+
+    <h3>Connected Agents</h3>
+    <div id="operations-agents"></div>
+
+    <h3>Recent Activity</h3>
+    <div id="operations-activity"></div>
+
+    <p id="operations-message" role="status"></p>
+  </section>
+
   <a href="/" class="back">Back to dashboard</a>
 </main>
 
@@ -520,5 +553,6 @@ button.secondary { background: #304a39; color: white; }
 </script>
 <script src="/static/js/agent-connections.js"></script>
 <script src="/static/js/customer-jobs.js"></script>
+<script src="/static/js/agent-operations.js"></script>
 </body>
 </html>
