@@ -108,6 +108,18 @@ class TenantGuard(BaseHTTPMiddleware):
         ):
             return await call_next(request)
 
+        # Agent proposal status uses scoped bearer authentication.
+        # Only GET requests to numeric proposal IDs may pass.
+        # The endpoint enforces agent and tenant ownership.
+        if (
+            request.method == "GET"
+            and re.fullmatch(
+                r"/api/approvals/agent/[0-9]+",
+                path,
+            )
+        ):
+            return await call_next(request)
+
         # Workspace creation is not a public signup endpoint.
         if path == "/api/businesses":
             return JSONResponse(
