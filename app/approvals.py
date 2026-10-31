@@ -309,3 +309,95 @@ def decide_proposal(
         "status": data.decision,
         "executed": False,
     }
+
+
+@router.get("/agent/{proposal_id}")
+def agent_proposal_status(
+    proposal_id: int,
+    authorization: str | None = Header(default=None),
+):
+    """Read only this agent's own proposal decision."""
+    agent = authorize(
+        bearer_token(authorization),
+        "proposals:create",
+    )
+
+    migrate()
+
+    with connect() as db:
+        row = db.execute(
+            """
+            SELECT id, action, status, reviewed_at,
+                   idempotency_key, payload
+            FROM agent_proposals
+            WHERE id = ?
+              AND business_id = ?
+              AND agent_id = ?
+            """,
+            (
+                proposal_id,
+                agent["business_id"],
+                agent["agent_id"],
+            ),
+        ).fetchone()
+
+    if row is None:
+        raise HTTPException(
+            404, "Proposal not found"
+        )
+
+    return {
+        "id": row["id"],
+        "action": row["action"],
+        "status": row["status"],
+        "reviewed_at": row["reviewed_at"],
+        "idempotency_key": row["idempotency_key"],
+        "payload": json.loads(row["payload"]),
+        "executed": False,
+    }
+
+
+@router.get("/agent/{proposal_id}")
+def agent_proposal_status(
+    proposal_id: int,
+    authorization: str | None = Header(default=None),
+):
+    """Read only this agent's own proposal decision."""
+    agent = authorize(
+        bearer_token(authorization),
+        "proposals:create",
+    )
+
+    migrate()
+
+    with connect() as db:
+        row = db.execute(
+            """
+            SELECT id, action, status, reviewed_at,
+                   idempotency_key, payload
+            FROM agent_proposals
+            WHERE id = ?
+              AND business_id = ?
+              AND agent_id = ?
+            """,
+            (
+                proposal_id,
+                agent["business_id"],
+                agent["agent_id"],
+            ),
+        ).fetchone()
+
+    if row is None:
+        raise HTTPException(
+            404, "Proposal not found"
+        )
+
+    return {
+        "id": row["id"],
+        "action": row["action"],
+        "status": row["status"],
+        "reviewed_at": row["reviewed_at"],
+        "idempotency_key": row["idempotency_key"],
+        "payload": json.loads(row["payload"]),
+        "executed": False,
+    }
